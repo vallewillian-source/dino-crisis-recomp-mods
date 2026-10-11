@@ -73,6 +73,9 @@ psxrecomp_add_game_runtime(psx-runtime
 target_sources(psx-runtime PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src_game/event_flags.c")
 # Plugin de ativação widescreen (dc.enhancement.widescreen -> dc.view-widescreen).
 target_sources(psx-runtime PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src_game/mod_view.c")
+# Núcleo do pack de texturas HD (Beetle-style) — usado pelo dump hook do gpu.c
+# e pelo futuro lookup no caminho de draw.
+target_sources(psx-runtime PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/psxrecomp/runtime/src/hd_texture_pack.cpp")
 target_include_directories(psx-runtime PRIVATE "${PSX_GEN_SRC}")
 
 # ---- psx-matched-test: equivalência original vs substituição -------------

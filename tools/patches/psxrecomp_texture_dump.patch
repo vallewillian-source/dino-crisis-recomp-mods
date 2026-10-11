@@ -1,0 +1,81 @@
+diff --git a/runtime/src/gpu.c b/runtime/src/gpu.c
+index 18ed491b..0114d9ab 100644
+--- a/runtime/src/gpu.c
++++ b/runtime/src/gpu.c
+@@ -25,6 +25,8 @@
+ #include "event_ring.h"
+ #include "color_lut.h"
+ #include "mod_runtime.h"
++#include "png_write.h"
++#include "hd_texture_pack.h"
+ #include "sio.h"
+ #include "ws_cull_detect.h"
+ #include "ws_aspect_cone_math.h"
+@@ -2298,12 +2300,67 @@ static int      s_d24_present_hold = 0; /* vblanks to skip Swap after GP1(07h) *
+ static uint32_t s_d24_prev_disp_h = 0;  /* last GP1(07h) band height */
+ static void depth24_note_upload(uint32_t x, uint32_t w);
+ 
++/* ---- HD texture-pack dump hook (PSX_TEX_DUMP_DIR) --------------------
++ * Dumps every bulk CPU->VRAM upload as a PNG named <texhash>_<w>x<h>.png and
++ * appends one line to <dir>/dump.log: "frame x y w h texhash". texhash uses
++ * the hd_texture_pack CRC-32 word convention, so a dump maps 1:1 onto the
++ * eventual <texhash>-<palhash>.png replacement names once the draw-side
++ * lookup is wired (palhash is a draw-time property of the live CLUT).
++ * Deduped by filename: repeated identical uploads only append log lines. */
++static int      tex_dump_state = -1; /* -1 uninit, 0 off, 1 on */
++static char     tex_dump_dir[400];
++static void texture_dump_upload(uint16_t x, uint16_t y, uint16_t w, uint16_t h,
++                                const uint16_t *words) {
++    if (tex_dump_state < 0) {
++        const char *env = getenv("PSX_TEX_DUMP_DIR");
++        if (env && env[0] && strlen(env) < sizeof tex_dump_dir) {
++            snprintf(tex_dump_dir, sizeof tex_dump_dir, "%s", env);
++            tex_dump_state = 1;
++        } else {
++            tex_dump_state = 0;
++        }
++    }
++    if (tex_dump_state != 1 || w == 0 || h == 0)
++        return;
++    uint32_t texhash = hd_texture_crc32_words_le(words, (size_t)w * (size_t)h);
++    char path[512];
++    snprintf(path, sizeof path, "%s/%08x_%ux%u.png", tex_dump_dir, texhash, w, h);
++    FILE *fp = fopen(path, "rb");
++    int exists = (fp != NULL);
++    if (fp) fclose(fp);
++    if (!exists) {
++        uint8_t *rgb = (uint8_t *)malloc((size_t)w * h * 3);
++        if (rgb) {
++            for (size_t i = 0; i < (size_t)w * h; i++) {
++                uint16_t v = words[i];
++                uint8_t r = (uint8_t)((v & 31) << 3);  r |= r >> 5;
++                uint8_t g = (uint8_t)(((v >> 5) & 31) << 3); g |= g >> 5;
++                uint8_t b = (uint8_t)(((v >> 10) & 31) << 3); b |= b >> 5;
++                rgb[i * 3 + 0] = r; rgb[i * 3 + 1] = g; rgb[i * 3 + 2] = b;
++            }
++            fp = fopen(path, "wb");
++            if (fp) { png_write_rgb(fp, rgb, w, h); fclose(fp); }
++            free(rgb);
++        }
++    }
++    char logpath[512];
++    snprintf(logpath, sizeof logpath, "%s/dump.log", tex_dump_dir);
++    fp = fopen(logpath, "a");
++    if (fp) {
++        fprintf(fp, "%u %u %u %u %u %08x\n",
++                (uint32_t)s_frame_count, x, y, w, h, texhash);
++        fclose(fp);
++    }
++}
++
+ static void gp0_commit_cpu_to_vram(void) {
+     for (uint32_t row = 0; row < vram_write_h; row++)
+         for (uint32_t col = 0; col < vram_write_w; col++)
+             vram_write_pixels[row * vram_write_w + col] =
+                 vram[((vram_write_y + row) & 511u) * 1024u +
+                      ((vram_write_x + col) & 1023u)];
++    texture_dump_upload(vram_write_x, vram_write_y, vram_write_w, vram_write_h,
++                        vram_write_pixels);
+     gr_vram_transfer_in(vram_write_x, vram_write_y,
+                         vram_write_w, vram_write_h, vram_write_pixels);
+     depth24_note_upload(vram_write_x, vram_write_w);
