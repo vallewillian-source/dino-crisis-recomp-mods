@@ -1,0 +1,33 @@
+format_version = 5
+id = "dc.enhancement.widescreen"
+version = "1.0.0"
+name = "Dino Crisis View Enhancements"
+author = "willianvalle-source"
+description = "Display-view enhancements owned by trusted activation plugins (PSX display controls are mod-owned in this runtime). Widescreen selects a fixed 16:9 display aspect; Motion Interpolation enables presentation-only temporal blending."
+resolver = "declarative"
+save_compatibility = "shared"
+
+[[target]]
+game_id = "*"
+
+[[feature]]
+id = "widescreen"
+name = "Widescreen 16:9"
+description = "Disabled by default (the faithful 4:3). Engages at game entry: GTE-projected 3D and the present path use a 16:9 aspect. Dino Crisis rooms classify as 2D-only scenes, so the visible result is the classic widescreen-hack look -- pre-rendered backdrops stretch to fill the wide frame while cutscenes, FMVs and menus stay pillarboxed 4:3. A full no-stretch widescreen (sprite re-anchoring + cull widening) needs per-site reverse engineering and is planned for the decompilation phases."
+group = "Visual"
+default_enabled = false
+
+[[feature]]
+id = "motion-interp"
+name = "Motion Interpolation"
+description = "Presentation-only temporal blending at the display refresh rate: the GL presenter crossfades completed 30 fps guest frames for smoother motion (motion-adaptive mode keeps large changes clean to limit double-image trails). Guest timing, logic and audio stay stock. Forces the OpenGL renderer."
+group = "Visual"
+default_enabled = false
+
+[[plugin]]
+feature = "widescreen"
+id = "dc.view-widescreen"
+
+[[plugin]]
+feature = "motion-interp"
+id = "dc.view-motion-interp"

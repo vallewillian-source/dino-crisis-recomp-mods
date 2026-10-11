@@ -40,6 +40,12 @@ aspect_ratio = "4:3"
 [controller]
 default_mode = "digital"
 
+# Widescreen hack knobs ([widescreen] of dc.enhancement.widescreen engages the
+# 16:9 aspect via the trusted display-aspect plugin). auto_ui_squash keeps
+# final-layer HUD/UI proportion-correct; the pre-rendered backdrops stretch.
+[widescreen]
+auto_ui_squash = true
+
 [netplay]
 require_cue = true
 required_tracks = 2

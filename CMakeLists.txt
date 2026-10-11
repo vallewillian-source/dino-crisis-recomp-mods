@@ -71,6 +71,8 @@ psxrecomp_add_game_runtime(psx-runtime
 # Substituições matched linkadas no runtime (fornecem os símbolos cujos
 # corpos foram removidos dos shards filtrados).
 target_sources(psx-runtime PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src_game/event_flags.c")
+# Plugin de ativação widescreen (dc.enhancement.widescreen -> dc.view-widescreen).
+target_sources(psx-runtime PRIVATE "${CMAKE_CURRENT_SOURCE_DIR}/src_game/mod_view.c")
 target_include_directories(psx-runtime PRIVATE "${PSX_GEN_SRC}")
 
 # ---- psx-matched-test: equivalência original vs substituição -------------
