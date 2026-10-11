@@ -1,0 +1,142 @@
+# dc.enhancement.fade-speed — Fase 3.2: primeiro mod package do projeto.
+#
+# Ajusta a velocidade dos fades (transições de cena) do Dino Crisis.
+# Alvo: os dois addiu do Fade_Update (func_80047030, analisado na Fase 1):
+#   0x8004714C: addiu v0,v0,+6    (fade-in,  +6/frame)
+#   0x80047230: addiu v0,v0,-20   (fade-out, -20/frame)
+# Escada when_integer: 1x = autêntico (identidade), 2x..32x = mais rápido.
+# Patch declarativo em main_exe: o guard stale-static do runtime roteia os
+# blocos patcheados para o dirty-RAM interpreter.
+#
+# NOTA: bytes de instrução MIPS em RAM são little-endian; o imediato de 16 bits
+# são os 2 PRIMEIROS bytes da palavra (ex.: 0x24420006 -> 06 00 42 24).
+#
+# default_enabled = false: mods ficam DESLIGADOS por padrão (lição da tela
+# preta de 2026-10-10 — cd-speed/fast-loading quebraram o load de cena).
+
+format_version = 5
+id = "dc.enhancement.fade-speed"
+version = "1.0.0"
+name = "Fade Speed"
+author = "dino-crisis-recomp"
+description = "Multiplica a velocidade das transições de fade (entradas e saídas de cena). 1x = autêntico."
+resolver = "declarative"
+save_compatibility = "shared"
+
+[[target]]
+game_id = "*"
+
+[[feature]]
+id = "fade-speed"
+name = "Velocidade dos fades"
+description = "Multiplicador aplicado ao passo de fade por frame (padrão: +6 entra / -20 sai). 1x mantém o comportamento original."
+group = "Gameplay"
+default_enabled = false
+
+[[option]]
+feature = "fade-speed"
+id = "speed"
+label = "Multiplicador"
+description = "1x = autêntico; 32x = praticamente instantâneo."
+group = "Gameplay"
+type = "integer"
+min = 1
+max = 32
+step = 1
+default = 1
+
+[[patch]]
+feature = "fade-speed"
+target = "main_exe"
+address = 0x8004714C
+expected = "06004224"
+replace = "06004224"
+when_integer = { option = "speed", op = "eq", value = 1 }
+
+[[patch]]
+feature = "fade-speed"
+target = "main_exe"
+address = 0x80047230
+expected = "ecff4224"
+replace = "ecff4224"
+when_integer = { option = "speed", op = "eq", value = 1 }
+
+[[patch]]
+feature = "fade-speed"
+target = "main_exe"
+address = 0x8004714C
+expected = "06004224"
+replace = "0c004224"
+when_integer = { option = "speed", op = "eq", value = 2 }
+
+[[patch]]
+feature = "fade-speed"
+target = "main_exe"
+address = 0x80047230
+expected = "ecff4224"
+replace = "d8ff4224"
+when_integer = { option = "speed", op = "eq", value = 2 }
+
+[[patch]]
+feature = "fade-speed"
+target = "main_exe"
+address = 0x8004714C
+expected = "06004224"
+replace = "18004224"
+when_integer = { option = "speed", op = "eq", value = 4 }
+
+[[patch]]
+feature = "fade-speed"
+target = "main_exe"
+address = 0x80047230
+expected = "ecff4224"
+replace = "b0ff4224"
+when_integer = { option = "speed", op = "eq", value = 4 }
+
+[[patch]]
+feature = "fade-speed"
+target = "main_exe"
+address = 0x8004714C
+expected = "06004224"
+replace = "30004224"
+when_integer = { option = "speed", op = "eq", value = 8 }
+
+[[patch]]
+feature = "fade-speed"
+target = "main_exe"
+address = 0x80047230
+expected = "ecff4224"
+replace = "60ff4224"
+when_integer = { option = "speed", op = "eq", value = 8 }
+
+[[patch]]
+feature = "fade-speed"
+target = "main_exe"
+address = 0x8004714C
+expected = "06004224"
+replace = "60004224"
+when_integer = { option = "speed", op = "eq", value = 16 }
+
+[[patch]]
+feature = "fade-speed"
+target = "main_exe"
+address = 0x80047230
+expected = "ecff4224"
+replace = "c0fe4224"
+when_integer = { option = "speed", op = "eq", value = 16 }
+
+[[patch]]
+feature = "fade-speed"
+target = "main_exe"
+address = 0x8004714C
+expected = "06004224"
+replace = "c0004224"
+when_integer = { option = "speed", op = "eq", value = 32 }
+
+[[patch]]
+feature = "fade-speed"
+target = "main_exe"
+address = 0x80047230
+expected = "ecff4224"
+replace = "80fd4224"
+when_integer = { option = "speed", op = "eq", value = 32 }

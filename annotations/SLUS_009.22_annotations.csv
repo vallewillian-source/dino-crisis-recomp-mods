@@ -1,0 +1,1 @@
+0x8001A1C8, entry point do EXE boot (CRT start recebido do kernel via Exec; chama incializacao e loop principal)

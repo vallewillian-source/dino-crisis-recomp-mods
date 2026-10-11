@@ -9,23 +9,23 @@
     "description": "",
     "publisher": "",
     "year": "",
-    "region": "USA",
-    "players": 1
+    "region": "",
+    "players": 2
   },
   "rom_identity": {
-    "cue_name": "Dino Crisis (USA) (Rev 1).cue",
-    "bin_name": "Dino Crisis (USA) (Rev 1) (Track 1).bin",
+    "cue_name": "Dino Crisis (USA).cue",
+    "bin_name": "Dino Crisis (USA) (Track 1).bin",
     "track_counts": [
       2
     ],
     "require_cue": true,
     "data_track": {
-      "size": 379986768,
-      "md5": "35c0b179aa22d83786d30ba8f9466d5e",
-      "sha1": "0ef3326f26f1d97f4ab467023ac6be5e1189a6d3",
-      "crc32": "358ad1eb"
+      "size": 379984416,
+      "md5": "4990bb2a9e3374a234885ac983a9397a",
+      "sha1": "0f1dc456c40bd0839afd0c0947a71ebb4e16d836",
+      "crc32": "bd09f6d5"
     },
-    "disc_fp": "839293359a286852164bcc0137f32b5e1d4076f634492f9c416e719cfd5e7279"
+    "disc_fp": "948176c21eeaca2a64db5b92d4c276ee778af09c3facf9ba4fb5bf2b99116a74"
   },
   "exe": {
     "load_address": "0x80018000",
@@ -34,7 +34,7 @@
     "stack_base": "0x801FFFF0"
   },
   "seeds": {
-    "count": 908,
+    "count": 909,
     "source": "boot_exe_jal"
   },
   "warnings": [],

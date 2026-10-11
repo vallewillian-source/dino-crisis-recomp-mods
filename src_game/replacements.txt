@@ -1,0 +1,7 @@
+# Fase 2 — segmentos substituídos por C legível (src_game/)
+# Um PC de segmento por linha; os corpos originais são removidos dos shards
+# gerados por tools/filter_generated.py (build) e verificados pelo
+# psx-matched-test contra src_game/event_flags.c.
+0x8004A87C
+0x8004A7E8
+0x8004A830
